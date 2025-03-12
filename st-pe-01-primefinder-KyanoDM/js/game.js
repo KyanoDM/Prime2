@@ -4,7 +4,7 @@ window.addEventListener("load", initialize);
 window.addEventListener('resize', updateVisibility);
 
 let amountOfPrimeNumbers = 0;
-let runFirstTime = true;
+let runFirstTime = true, hardCoreMode = false;
 let maxPrimeNumbers;
 let playAgainButton, stopButton;
 
@@ -35,6 +35,9 @@ function addEventListeners() {
 }
 
 function startGame(event) {
+    const gameDiv = document.querySelector("#gameDiv");
+    gameDiv.innerHTML = "";
+
     if (event.target.innerText === "Makkelijk") {
         createSquares(gameDiv, 10);
         while (amountOfPrimeNumbers === 0) {
@@ -47,34 +50,26 @@ function startGame(event) {
             playAgain();
             createSquares(gameDiv, 20);
         }
-    } else if (event.target.innerText === "Moeilijk"){
+    } else if (event.target.innerText === "Moeilijk") {
         createSquares(gameDiv, 30);
         while (amountOfPrimeNumbers === 0) {
             playAgain();
-            createSquares(gameDiv, 30);
+            createSquares(gameDiv, 40);
         }
+    } 
+    const hardCoreInput = document.querySelector("#HardcoreSwitch");
+    if (hardCoreInput.checked) {
+        hardCoreMode = true;
     } else {
-        const difficultySelectorInput = document.querySelector(".difficultySelectorInput");
-        let inputValue = difficultySelectorInput.value;
-        if (!inputValue || isNaN(inputValue) || inputValue < 1 || inputValue > 1000 || !Number.isInteger(Number(inputValue))) {
-            alert("Vul een geheel getal in tussen 1 en 1000.");
-            return;
-        }
-        createSquares(gameDiv, difficultySelectorInput.value);
-        while (amountOfPrimeNumbers === 0) {
-            playAgain();
-            createSquares(gameDiv, difficultySelectorInput.value);
-        }
-        difficultySelectorInput.value = "";
+        hardCoreMode = false;
     }
-
     maxPrimeNumbers = amountOfPrimeNumbers;
     primeNumbersLeft();
     updateVisibility();
-    toggleDifficultySelector();
     togglePrimeNumbersLeft();
-    toggleStopButton();
     toggleProgressBar();
+    toggleStopButton();
+    toggleDifficultySelector();
 }
 
 function createSquares(gameDiv, amountOfSquares) {
@@ -122,6 +117,11 @@ function clickSquare(event) {
         wrongNumber(event.target.innerText);
         event.target.style.pointerEvents = "none";
         event.target.classList.add("btn-danger", "square-danger");
+        if (hardCoreMode) {
+            makeNonSelectedSquaredRed();
+            toggleStopButton();
+            playAgainButton.classList.remove("hidden");
+        }
     }
 }
 

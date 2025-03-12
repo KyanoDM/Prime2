@@ -1,7 +1,7 @@
 
 iframe{
-    width: 25.35vw;
-    height: 45vw;
+    width: 21.46vw;
+    height: 38vw;
 }
 @media screen and (max-width: 991px) {
     iframe{
@@ -11,7 +11,7 @@ iframe{
 }
 
 h1 {
-    font-size: 5vw;
+    font-size: 3vw;
 }
 
 .square {
