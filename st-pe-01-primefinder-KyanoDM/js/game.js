@@ -56,20 +56,18 @@ function startGame(event) {
             playAgain();
             createSquares(gameDiv, 40);
         }
-    } 
-    const hardCoreInput = document.querySelector("#HardcoreSwitch");
-    if (hardCoreInput.checked) {
-        hardCoreMode = true;
-    } else {
-        hardCoreMode = false;
     }
+    hideElement("#difficultySelector");
+
+    const hardCoreInput = document.querySelector("#HardcoreSwitch");
+    hardCoreMode = hardCoreInput.checked;
+
     maxPrimeNumbers = amountOfPrimeNumbers;
     primeNumbersLeft();
     updateVisibility();
-    togglePrimeNumbersLeft();
-    toggleProgressBar();
-    toggleStopButton();
-    toggleDifficultySelector();
+    showElement("#primeNumbersLeft");
+    showElement("#progressBarContainer");
+    showElement("#stopButton");
 }
 
 function createSquares(gameDiv, amountOfSquares) {
@@ -118,8 +116,9 @@ function clickSquare(event) {
         event.target.style.pointerEvents = "none";
         event.target.classList.add("btn-danger", "square-danger");
         if (hardCoreMode) {
+            makeNonSelectedPrimeNumbersOrange();
             makeNonSelectedSquaredRed();
-            toggleStopButton();
+            hideElement("#stopButton");
             playAgainButton.classList.remove("hidden");
         }
     }
@@ -130,7 +129,7 @@ function primeNumbersLeft() {
     if (amountOfPrimeNumbers === 0) {
         primeNumbersLeft.innerText = "Alle priemgetallen zijn gevonden!";
         makeNonSelectedSquaredRed();
-        toggleStopButton();
+        hideElement("#stopButton");
         playAgainButton.classList.remove("hidden");
     } else if (amountOfPrimeNumbers === 1) {
         primeNumbersLeft.innerText = "Er is nog 1 priemgetal over";
@@ -211,21 +210,32 @@ function clearToasts() {
 
 function playAgain() {
     runFirstTime = false;
-    playAgainButton.classList.add("hidden");
     amountOfPrimeNumbers = 0;
     clearToasts();
     initialize();
-    toggleDifficultySelector();
-    togglePrimeNumbersLeft();
-    toggleProgressBar();
+    showElement("#difficultySelector");
+    hideElement("#primeNumbersLeft");
+    hideElement("#progressBarContainer");
+    hideElement("#playAgainButton");
 }
 
 function makeNonSelectedSquaredRed() {
     const squares = document.querySelectorAll(".square");
     squares.forEach(square => {
-        if (!square.classList.contains("square-succes")) {
+        if (!square.classList.contains("square-succes") && !square.classList.contains("square-warning>")) {
             square.classList.remove("btn-outline-info");
             square.classList.add("btn-danger", "square-danger");
+            square.style.pointerEvents = "none";
+        }
+    });
+}
+
+function makeNonSelectedPrimeNumbersOrange() {
+    const squares = document.querySelectorAll(".square");
+    squares.forEach(square => {
+        if (!isPrime(parseInt(square.innerText))) {
+            square.classList.remove("btn-outline-info");
+            square.classList.add("btn-warning", "square-warning");
             square.style.pointerEvents = "none";
         }
     });
@@ -253,27 +263,23 @@ function updateVisibility() {
     }
 }
 
-function toggleDifficultySelector() {
-    const difficultySelector = document.querySelector("#difficultySelector");
-    difficultySelector.classList.toggle("hidden");
+function hideElement(selector) {
+    const element = document.querySelector(selector);
+    if (element) {
+        element.classList.add("hidden");
+    }
 }
 
-function togglePrimeNumbersLeft() {
-    const primeNumbersLeft = document.querySelector("#primeNumbersLeft");
-    primeNumbersLeft.classList.toggle("hidden");
+function showElement(selector) {
+    const element = document.querySelector(selector);
+    if (element) {
+        element.classList.remove("hidden");
+    }
 }
 
-function toggleStopButton() {
-    stopButton.classList.toggle("hidden");
-}
-
-function toggleProgressBar() {
-    const progressBar = document.querySelector("#progressBarContainer");
-    progressBar.classList.toggle("hidden");
-}
 
 function stop() {
-    toggleStopButton();
+    hideElement("#stopButton");
     playAgain();
 }
 

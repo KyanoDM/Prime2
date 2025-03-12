@@ -34,6 +34,10 @@ h1 {
     background-color: #e44c55;
 }
 
+.square-warning {
+    background-color: #f7b84b;
+}
+
 .square:hover {
     transform: scale(1.1);
 }
