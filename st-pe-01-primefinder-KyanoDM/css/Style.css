@@ -3,11 +3,9 @@ iframe{
     width: 21.46vw;
     height: 38vw;
 }
-@media screen and (max-width: 991px) {
-    iframe{
-        width: 100%;
-        height: 300%;
-    }
+
+video {
+    width: 500px;
 }
 
 h1 {
@@ -40,6 +38,19 @@ h1 {
 
 .square:hover {
     transform: scale(1.1);
+}
+
+.hidden {
+    display: none;
+}
+
+.difficultySelectorBtn {
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.form-check-input {
+    pointer-events: none;
 }
 
 #toast-container {
@@ -80,11 +91,9 @@ h1 {
     }
 }
 
-.hidden {
-    display: none;
-}
-
-.difficultySelectorBtn {
-    margin-left: 5px;
-    margin-right: 5px;
+@media screen and (max-width: 991px) {
+    iframe{
+        width: 100%;
+        height: 300%;
+    }
 }

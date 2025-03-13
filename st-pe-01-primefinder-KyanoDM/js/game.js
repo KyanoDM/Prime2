@@ -3,10 +3,10 @@
 window.addEventListener("load", initialize);
 window.addEventListener('resize', updateVisibility);
 
-let amountOfPrimeNumbers = 0;
-let runFirstTime = true, hardCoreMode = false;
-let maxPrimeNumbers;
-let playAgainButton, stopButton;
+let amountOfPrimeNumbers = 0, maxPrimeNumbers;
+let runFirstTime = true, hardcoreMode = false;
+let playAgainButton, stopButton, findButton, hardcoreButton, subwayButton;
+
 
 function initialize() {
     const gameDiv = document.querySelector("#gameDiv");
@@ -15,6 +15,7 @@ function initialize() {
     initializeToolTips();
 }
 
+//van bootstrap
 function initializeToolTips() {
     let tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     let tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
@@ -30,8 +31,17 @@ function addEventListeners() {
     stopButton = document.querySelector("#stopButton");
     stopButton.addEventListener("click", stop);
 
+    findButton = document.querySelector("#findButton");
+    findButton.addEventListener("click", findOnePrimeNumber);
+
+    hardcoreButton = document.querySelector("#hardcoreButton");
+    hardcoreButton.addEventListener("click", toggleHardcoreCheckmark);
+
     playAgainButton = document.querySelector("#playAgainButton");
     playAgainButton.addEventListener("click", playAgain);
+
+    subwayButton = document.querySelector("#subwayButton");
+    subwayButton.addEventListener("click", toggleSubway);
 }
 
 function startGame(event) {
@@ -50,24 +60,25 @@ function startGame(event) {
             playAgain();
             createSquares(gameDiv, 20);
         }
-    } else if (event.target.innerText === "Moeilijk") {
-        createSquares(gameDiv, 30);
+    } else {
+        createSquares(gameDiv, 40);
         while (amountOfPrimeNumbers === 0) {
             playAgain();
             createSquares(gameDiv, 40);
         }
     }
-    hideElement("#difficultySelector");
-
-    const hardCoreInput = document.querySelector("#HardcoreSwitch");
-    hardCoreMode = hardCoreInput.checked;
+    const hardcoreInput = document.querySelector("#HardcoreSwitch");
+    hardcoreMode = hardcoreInput.checked;
 
     maxPrimeNumbers = amountOfPrimeNumbers;
     primeNumbersLeft();
     updateVisibility();
+    hideElement("#difficultySelector");
     showElement("#primeNumbersLeft");
     showElement("#progressBarContainer");
     showElement("#stopButton");
+    findButton.classList.remove("disabled");
+    
 }
 
 function createSquares(gameDiv, amountOfSquares) {
@@ -115,9 +126,10 @@ function clickSquare(event) {
         wrongNumber(event.target.innerText);
         event.target.style.pointerEvents = "none";
         event.target.classList.add("btn-danger", "square-danger");
-        if (hardCoreMode) {
+        if (hardcoreMode) {
             makeNonSelectedPrimeNumbersOrange();
             makeNonSelectedSquaredRed();
+            findButton.classList.add("disabled");
             hideElement("#stopButton");
             playAgainButton.classList.remove("hidden");
         }
@@ -129,6 +141,7 @@ function primeNumbersLeft() {
     if (amountOfPrimeNumbers === 0) {
         primeNumbersLeft.innerText = "Alle priemgetallen zijn gevonden!";
         makeNonSelectedSquaredRed();
+        findButton.classList.add("disabled");
         hideElement("#stopButton");
         playAgainButton.classList.remove("hidden");
     } else if (amountOfPrimeNumbers === 1) {
@@ -159,7 +172,7 @@ function wrongNumber(n) {
     let deviders = findDeviders(n);
     msg = `Het getal ${n} is geen priemgetal. Het heeft ${deviders.length} delers: ${deviders.join(", ")}`;
     makeToast(msg);
-    fillP(msg);
+    fillPWithMessage(msg);
 }
 
 function findDeviders(n) {
@@ -198,7 +211,7 @@ function makeToast(msg) {
     }, 8000);
 }
 
-function fillP(msg) {
+function fillPWithMessage(msg) {
     const wrongNumber = document.querySelector("#wrongNumber");
     wrongNumber.innerHTML = msg;
 }
@@ -233,7 +246,7 @@ function makeNonSelectedSquaredRed() {
 function makeNonSelectedPrimeNumbersOrange() {
     const squares = document.querySelectorAll(".square");
     squares.forEach(square => {
-        if (!isPrime(parseInt(square.innerText))) {
+        if (isPrime(parseInt(square.innerText))) {
             square.classList.remove("btn-outline-info");
             square.classList.add("btn-warning", "square-warning");
             square.style.pointerEvents = "none";
@@ -258,7 +271,7 @@ function updateVisibility() {
             wrongAnswer.style.display = 'none';
         }
         if (toastContainer) {
-            toastContainer.style.display = 'flex'; 
+            toastContainer.style.display = 'flex';
         }
     }
 }
@@ -277,9 +290,45 @@ function showElement(selector) {
     }
 }
 
+function findOnePrimeNumber() {
+    const squares = document.querySelectorAll(".square");
+    let foundPrimeNumber = false
+    squares.forEach(square => {
+        if (isPrime(parseInt(square.innerText)) && square.classList.contains("btn-outline-info") && !foundPrimeNumber) {
+            square.classList.remove("btn-outline-info");
+            square.classList.add("btn-success", "square-succes");
+            square.style.pointerEvents = "none";
+            amountOfPrimeNumbers--;
+            foundPrimeNumber = true;
+            primeNumbersLeft();
+        }
+    });
+}
+
+function toggleHardcoreCheckmark() {
+    const hardcoreSwitch = document.querySelector("#HardcoreSwitch");
+    hardcoreSwitch.checked = !hardcoreSwitch.checked;
+}
+
+function toggleSubway() {
+    const subwaySwitch = document.querySelector("#subwaySwitch");
+    subwaySwitch.checked = !subwaySwitch.checked;
+
+    const subwaySurferDiv = document.querySelector("#subwaySurfer");
+    const mainDiv = document.querySelector("#mainDiv");
+
+    if (subwaySwitch.checked) {
+        subwaySurferDiv.classList.remove("hidden");
+        mainDiv.classList.add("col-lg-9");
+    } else {
+        subwaySurferDiv.classList.add("hidden");
+        mainDiv.classList.remove("col-lg-9");
+    }
+}
 
 function stop() {
     hideElement("#stopButton");
+    findButton.classList.add("disabled");
     playAgain();
 }
 
